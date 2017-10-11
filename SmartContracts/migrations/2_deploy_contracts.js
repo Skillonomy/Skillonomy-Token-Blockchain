@@ -5,6 +5,7 @@ var FTPBasic = artifacts.require("./FTPBasic.sol");
 var Ownable = artifacts.require("./ownership/Ownable.sol");
 var MintableToken = artifacts.require("./token/MintableToken.sol");
 var PullPayment = artifacts.require("./payment/PullPayment.sol");
+var admin = artifacts.require("./admin.sol");
 
 module.exports = function(deployer) {
     deployer.deploy(ConvertLib);
@@ -17,4 +18,5 @@ module.exports = function(deployer) {
     deployer.link(AddxUintMapping, FTPBasic);
     deployer.link(MintableToken, FTPBasic);
     deployer.deploy(FTPBasic);
+    deployer.deploy(admin);
 };
