@@ -12,7 +12,7 @@ contract admin {
      mapping (address => user) adminInfo;
      mapping (address => bool) isAdmin;
 
-     function admin (string _name, string _desc) {
+     function admin (string _name, string _desc) payable {
           owner = user({
                addr : msg.sender,
                name : _name,
