@@ -22,7 +22,7 @@ contract admin {
           isAdmin[msg.sender] = true;
           adminInfo[msg.sender] = owner;
      }
-     
+
      event adminAdded(address _address, string _name, string _desc);
      event adminRemoved(address _address, string _name, string _desc);
      event moneySend(address _address, uint _amount);
@@ -62,5 +62,5 @@ contract admin {
           if (owner.addr != msg.sender) return;
           selfdestruct(owner.addr);
      }
-     
+
 }

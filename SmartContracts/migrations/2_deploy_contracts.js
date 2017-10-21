@@ -18,5 +18,5 @@ module.exports = function(deployer) {
     deployer.link(AddxUintMapping, FTPBasic);
     deployer.link(MintableToken, FTPBasic);
     deployer.deploy(FTPBasic);
-    deployer.deploy(admin);
+    deployer.deploy(admin, "Sraka", "Doshka");
 };

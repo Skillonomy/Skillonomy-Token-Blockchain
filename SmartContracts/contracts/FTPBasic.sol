@@ -3,6 +3,7 @@ pragma solidity ^0.4.4;
 import "./token/MintableToken.sol";
 import "./payment/PullPayment.sol";
 import "./AddxUintMapping.sol";
+import "./libs/StringLib.sol";
 
 contract FTPBasic is MintableToken, PullPayment
 {
@@ -13,8 +14,11 @@ contract FTPBasic is MintableToken, PullPayment
 
     bool canAddAddresses = false;
 
-    event AddressAdded(address addx, uint opID);
-    
+    event AddressAdded(address addx, string messsage, string dummy);
+    event CanNotAddAddress(address addx, string message, string dummy);
+    event AddingAddressesActivated(address addx, string message, string dummy);
+    event AddingAddressesDeactivated(address addx, string source, string massage);
+
     function FTPBasic()
     {
 
@@ -31,11 +35,14 @@ contract FTPBasic is MintableToken, PullPayment
 	{
 	    AddxUintMapping.insert(addx_coefs, addx, coef);
 	    AddxUintMapping.insert(addx_opID, addx, opID);
-	    AddressAdded(msg.sender, opID);
+	    AddressAdded(addx, "Added:" + StringUtils.uintToBytes(opID) + " + coeficient: " + StringUtils.uintToBytes(coef));
 	    return true;
-	
 	}
-	else return false;
+	else
+	{
+	    CanNotAddAddress(msg.sender, "Can not add new module address", "");
+	    return false;
+	}
     }
 
     function EraseCoefs() onlyOwner public
@@ -46,6 +53,7 @@ contract FTPBasic is MintableToken, PullPayment
     function StartAddingAdresses() onlyOwner public
     {
 	canAddAddresses = true;
+	AddingAddressesActivated(msg.sender, "Now FTP contract can add new Addresses", "");
     }
 
     function ResetEmissionAdresses() onlyOwner public
@@ -56,6 +64,6 @@ contract FTPBasic is MintableToken, PullPayment
     function StopAddingAdresses() onlyOwner public
     {
 	canAddAddresses = false;
+	AddingAddressesDeactivated(msg.sender, "From now FTP contract can not add new addresses", "");
     }
-
 }
