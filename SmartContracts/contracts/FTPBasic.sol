@@ -43,13 +43,15 @@ contract FTPBasic is MintableToken, PullPayment
     
     AddxUintMapping.itmap internal addx_coefs;
     AddxUintMapping.itmap internal addx_opID;
-
+    
+    using AddxUintMapping for AddxUintMapping.itmap;
+    
     bool canAddAddresses = false;
 
-    event AddressAdded(address addx, string messsage, string dummy);
+    event AddressAdded(address addx, string message, string dummy);
     event CanNotAddAddress(address addx, string message, string dummy);
     event AddingAddressesActivated(address addx, string message, string dummy);
-    event AddingAddressesDeactivated(address addx, string source, string massage);
+    event AddingAddressesDeactivated(address addx, string source, string message);
 
     function FTPBasic()
     {
@@ -65,9 +67,13 @@ contract FTPBasic is MintableToken, PullPayment
     {
 	if (canAddAddresses)
 	{
+	    AddressAdded(msg.sender, "Debug 1", "");
 	    AddxUintMapping.insert(addx_coefs, addx, coef);
-	    AddxUintMapping.insert(addx_opID, addx, opID);
-	    AddressAdded(addx, new string(opID), new string(coef));// strConcat ("Added:", new string(opID)), strConcat("  coeficient: ", new string(coef)));
+	    AddressAdded(msg.sender, "Debug 2", "");
+//	    AddxUintMapping.insert(addx_opID, addx, opID);
+    	    AddressAdded(msg.sender, "Debug 3", "");
+//	    AddressAdded(addx, new string(opID), new string(coef));// strConcat ("Added:", new string(opID)), strConcat("  coeficient: ", new string(coef)));
+	    AddressAdded(msg.sender, "Debug 4", "");
 	    return true;
 	}
 	else

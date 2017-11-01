@@ -1,7 +1,10 @@
 
 library AddxUintMapping
 {
-  struct itmap
+
+event AddxUintMappingDebug(address addx, string message1, string message2);
+
+struct itmap
   {
     mapping(address => IndexValue) data;
     KeyFlag[] keys;
@@ -13,21 +16,22 @@ library AddxUintMapping
   }
   struct IndexValue { uint keyIndex; uint value; }
 
-
   function insert(itmap storage self, address key, uint value) returns (bool replaced)
   {
-    uint keyIndex = self.data[key].keyIndex;
-    self.data[key].value = value;
-    if (keyIndex > 0)
+      AddxUintMappingDebug(msg.sender, "Debug1", "");
       return true;
-    else
-    {
-      keyIndex = self.keys.length++;
-      self.data[key].keyIndex = keyIndex + 1;
-      self.keys[keyIndex].key = key;
-      self.size++;
-      return false;
-    }
+//    uint keyIndex = self.data[key].keyIndex;
+//    self.data[key].value = value;
+//    if (keyIndex > 0)
+//      return true;
+//    else
+//    {
+//      keyIndex = self.keys.length++;
+//      self.data[key].keyIndex = keyIndex + 1;
+//      self.keys[keyIndex].key = key;
+//      self.size++;
+//      return false;
+//    }
   }
  
   function remove(itmap storage self, address key) returns (bool success)
