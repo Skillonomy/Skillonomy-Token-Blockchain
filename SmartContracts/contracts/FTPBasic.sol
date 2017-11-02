@@ -28,6 +28,29 @@ contract FTPBasic is MintableToken, PullPayment
 
         return string(babcde);
     }
+    
+    function bytes32ToString (bytes32 data) returns (string) {
+    bytes memory bytesString = new bytes(32);
+    for (uint j=0; j<32; j++) {
+      byte char = byte(bytes32(uint(data) * 2 ** (8 * j)));
+      if (char != 0) {
+        bytesString[j] = char;
+      }
+    }
+
+    return string(bytesString);
+  }
+    
+    function uintToBytes32(uint256 x) returns (bytes32 b) {
+	assembly { mstore(add(b, 32), x) }
+    }
+
+    function uintToString(uint number) returns (string)
+    {
+	bytes32 bx32 = uintToBytes32(number);
+	return bytes32ToString(bx32);
+    }
+
 
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
 	return strConcat(_a, _b, _c, _d, "");
@@ -41,23 +64,34 @@ contract FTPBasic is MintableToken, PullPayment
 	return strConcat(_a, _b, "", "", "");
     }
     
-    AddxUintMapping.itmap internal addx_coefs;
-    AddxUintMapping.itmap internal addx_opID;
-    
-    using AddxUintMapping for AddxUintMapping.itmap;
-    
+    struct ModuleInfo {
+	uint size;
+	mapping (uint => uint) opId;
+	mapping (uint => uint) coef;
+	mapping (uint => address) module;
+	mapping (uint => uint) opIdIndex;
+    }
+
+    ModuleInfo FTPModules;
+
     bool canAddAddresses = false;
 
-    event AddressAdded(address addx, string message, string dummy);
+    event AddressAdded(address addx, uint operationId, uint coeficient);
     event CanNotAddAddress(address addx, string message, string dummy);
     event AddingAddressesActivated(address addx, string message, string dummy);
     event AddingAddressesDeactivated(address addx, string source, string message);
+    event AddressList(address addx, uint operationId, uint coeficient);
 
     function FTPBasic()
     {
-
+	ResetFTPModules();
     }
 
+    function ResetFTPModules()
+    {
+	FTPModules = ModuleInfo({size: 0});
+    }
+    
     function emit() onlyOwner public
     {
 
@@ -67,19 +101,27 @@ contract FTPBasic is MintableToken, PullPayment
     {
 	if (canAddAddresses)
 	{
-	    AddressAdded(msg.sender, "Debug 1", "");
-	    AddxUintMapping.insert(addx_coefs, addx, coef);
-	    AddressAdded(msg.sender, "Debug 2", "");
-//	    AddxUintMapping.insert(addx_opID, addx, opID);
-    	    AddressAdded(msg.sender, "Debug 3", "");
-//	    AddressAdded(addx, new string(opID), new string(coef));// strConcat ("Added:", new string(opID)), strConcat("  coeficient: ", new string(coef)));
-	    AddressAdded(msg.sender, "Debug 4", "");
+	    uint i = FTPModules.size;
+	    FTPmodules.module[i] = addx;
+	    FTPmodules.coef[i] = coef;
+	    FTPmodules.opId[i] = opID;
+	    FTPmodules.opIdIndex[opID] = i;
+	    ++FTPModules.size;
+	    AddressAdded(addx, opID, coef);
 	    return true;
 	}
 	else
 	{
 	    CanNotAddAddress(msg.sender, "Can not add new module address", "");
 	    return false;
+	}
+    }
+    
+    function ListAddresses()
+    {
+	for (uint i = 0; i < FTPmodules.size; ++i)
+	{
+	    AddressList(FTPmodules.module[i], FTPmodules.opId[i], FTPmodules.coef[i]);
 	}
     }
 
