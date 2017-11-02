@@ -3,9 +3,12 @@ pragma solidity ^0.4.4;
 import "./token/MintableToken.sol";
 import "./payment/PullPayment.sol";
 import "./AddxUintMapping.sol";
+import "./math/SafeMath.sol";
 
 contract FTPBasic is MintableToken, PullPayment
 {
+    using SafeMath for uint256;
+
     function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){
 	bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
@@ -81,6 +84,7 @@ contract FTPBasic is MintableToken, PullPayment
     event AddingAddressesActivated(address addx, string message, string dummy);
     event AddingAddressesDeactivated(address addx, string source, string message);
     event AddressList(address addx, uint operationId, uint coeficient);
+    event ErrorAddingAddress(address addx, string errorMessage, uint opId);
 
     function FTPBasic()
     {
@@ -94,34 +98,65 @@ contract FTPBasic is MintableToken, PullPayment
     
     function emit() onlyOwner public
     {
+	uint256 coef_sum = 0;
+	uint256 emission_amount = 1000000000000;
+	for (uint i = 0; i < FTPModules.size; ++i)
+	{
+	    coef_sum += FTPModules.coef[i];
+	}
+	
+	if (coef_sum > 0)
+	{
+	    for (i = 0; i < FTPModules.size; ++i)
+	    {
+		uint256 module_emission_amount = emission_amount.mul(FTPModules.coef[i]);
+		module_emission_amount.div(coef_sum);
+	        balances[FTPModules.module[i]].add(module_emission_amount);
+	    }
+	}
 
+    }
+
+    function __AddAddress(address addx, uint coef, uint opID) internal
+    {
+    		    uint i = FTPModules.size;
+		    FTPModules.module[i] = addx;
+		    FTPModules.coef[i] = coef;
+		    FTPModules.opId[i] = opID;
+		    FTPModules.opIdIndex[opID] = i;
+		    ++FTPModules.size;
+		    AddressAdded(addx, opID, coef);
     }
 
     function AddAddress(address addx, uint coef, uint opID) onlyOwner public returns (bool)
     {
 	if (canAddAddresses)
 	{
-	    uint i = FTPModules.size;
-	    FTPmodules.module[i] = addx;
-	    FTPmodules.coef[i] = coef;
-	    FTPmodules.opId[i] = opID;
-	    FTPmodules.opIdIndex[opID] = i;
-	    ++FTPModules.size;
-	    AddressAdded(addx, opID, coef);
-	    return true;
+	    if (FTPModules.size == 0)
+	    {
+		__AddAddress(addx, coef, opID);
+		return true;
+	    }
+	    else if ((FTPModules.opId[FTPModules.opIdIndex[opID]] != opID)) 
+		{
+		    __AddAddress(addx, coef, opID);
+		    return true;
+		}
+	    ErrorAddingAddress(msg.sender, "Operation already exist",opID);
+	    return false;
 	}
 	else
 	{
-	    CanNotAddAddress(msg.sender, "Can not add new module address", "");
+	    CanNotAddAddress(msg.sender, "Adding addresses is not allowed", "");
 	    return false;
 	}
     }
-    
-    function ListAddresses()
+
+    function ListAddresses() onlyOwner public
     {
-	for (uint i = 0; i < FTPmodules.size; ++i)
+	for (uint i = 0; i < FTPModules.size; ++i)
 	{
-	    AddressList(FTPmodules.module[i], FTPmodules.opId[i], FTPmodules.coef[i]);
+	    AddressList(FTPModules.module[i], FTPModules.opId[i], FTPModules.coef[i]);
 	}
     }
 
