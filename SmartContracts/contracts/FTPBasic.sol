@@ -1,11 +1,10 @@
 pragma solidity ^0.4.4;
 
-import "./token/MintableToken.sol";
-import "./payment/PullPayment.sol";
-import "./AddxUintMapping.sol";
 import "./math/SafeMath.sol";
+import "./token/StandardToken.sol";
+import "./ownership/Ownable.sol";
 
-contract FTPBasic is MintableToken, PullPayment
+contract FTPBasic is StandardToken, Ownable
 {
     using SafeMath for uint256;
 
@@ -89,6 +88,7 @@ contract FTPBasic is MintableToken, PullPayment
     function FTPBasic()
     {
 	ResetFTPModules();
+	balances[msg.sender].add(10000000000000);
     }
 
     function ResetFTPModules()
