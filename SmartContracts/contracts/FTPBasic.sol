@@ -3,8 +3,9 @@ pragma solidity ^0.4.4;
 import "./math/SafeMath.sol";
 import "./token/StandardToken.sol";
 import "./ownership/Ownable.sol";
+import "./token/MintableToken.sol";
 
-contract FTPBasic is StandardToken, Ownable
+contract FTPBasic is StandardToken, Ownable, MintableToken
 {
     using SafeMath for uint256;
 
@@ -84,7 +85,9 @@ contract FTPBasic is StandardToken, Ownable
     event AddingAddressesDeactivated(address addx, string source, string message);
     event AddressList(address addx, uint operationId, uint coeficient);
     event ErrorAddingAddress(address addx, string errorMessage, uint opId);
-
+    event ModuleTokenEmmited(address addx, uint opId, uint amount);
+    event ProductiveActionError(address addx, uint opId, string message);
+    
     function FTPBasic()
     {
 	ResetFTPModules();
@@ -109,9 +112,15 @@ contract FTPBasic is StandardToken, Ownable
 	{
 	    for (i = 0; i < FTPModules.size; ++i)
 	    {
+		address mAddress = FTPModules.module[i];
+		uint opID = FTPModules.opId[i];
 		uint256 module_emission_amount = emission_amount.mul(FTPModules.coef[i]);
-		module_emission_amount.div(coef_sum);
-	        balances[FTPModules.module[i]].add(module_emission_amount);
+		module_emission_amount = module_emission_amount / coef_sum;
+		mint(mAddress, module_emission_amount);
+//		totalSupply = totalSupply.add(module_emission_amount);
+//	        balances[mAddress] += module_emission_amount;
+	        ModuleTokenEmmited(mAddress, opID, module_emission_amount);
+	        
 	    }
 	}
 
@@ -180,5 +189,25 @@ contract FTPBasic is StandardToken, Ownable
     {
 	canAddAddresses = false;
 	AddingAddressesDeactivated(msg.sender, "From now FTP contract can not add new addresses", "");
+    }
+    
+    function ProductiveAction(address module_address, uint opId, address destination) public
+    {
+	if (msg.sender == module_address)
+	{
+	    uint mIndex = FTPModules.opIdIndex[opId];
+	    address mModule = FTPModules.module[mIndex];
+	    if (mModule == module_address)
+	    {
+		uint256 mBalance = balances[module_address];
+	        uint256 tAmount = mBalance/10000;
+		transferFrom(module_address, destination, tAmount);
+	    }
+	    else
+	    {
+		ProductiveActionError(module_address, opId, "Invalid address for current operation ID");
+	    }
+	    
+	}
     }
 }
