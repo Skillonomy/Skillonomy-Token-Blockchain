@@ -87,6 +87,7 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
     event ErrorAddingAddress(address addx, string errorMessage, uint opId);
     event ModuleTokenEmmited(address addx, uint opId, uint amount);
     event ProductiveActionError(address addx, uint opId, string message);
+    event Debug(address addx, string func_from, string message);
     
     function FTPBasic()
     {
@@ -193,21 +194,30 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
     
     function ProductiveAction(address module_address, uint opId, address destination) public
     {
-	if (msg.sender == module_address)
-	{
-	    uint mIndex = FTPModules.opIdIndex[opId];
-	    address mModule = FTPModules.module[mIndex];
-	    if (mModule == module_address)
-	    {
-		uint256 mBalance = balances[module_address];
-	        uint256 tAmount = mBalance/10000;
-		transferFrom(module_address, destination, tAmount);
-	    }
-	    else
-	    {
-		ProductiveActionError(module_address, opId, "Invalid address for current operation ID");
-	    }
-	    
-	}
+	Debug(msg.sender, "Productive Action", "1");
+//	if (msg.sender == module_address)
+//	{
+//	    Debug(msg.sender, "Productive Action", "2");
+//	    uint mIndex = FTPModules.opIdIndex[opId];
+//	    Debug(msg.sender, "Productive Action", "3");
+//	    address mModule = FTPModules.module[mIndex];
+//	    Debug(msg.sender, "Productive Action", "4");
+//	    if (mModule == module_address)
+//	    {
+//		Debug(msg.sender, "Productive Action", "5");
+//		uint256 mBalance = balances[module_address];
+//		Debug(msg.sender, "Productive Action", "6");
+//	        uint256 tAmount = mBalance.div(10000);
+//	        Debug(msg.sender, "Productive Action", "7");
+//		transferFrom(module_address, destination, tAmount);
+//		Debug(msg.sender, "Productive Action", "8");
+//	    }
+//	    else
+//	    {
+//		ProductiveActionError(module_address, opId, "Invalid address for current operation ID");
+//	    }
+//	    
+//	}
+//	else ProductiveActionError(module_address, opId, "Invalid sender address");
     }
 }
