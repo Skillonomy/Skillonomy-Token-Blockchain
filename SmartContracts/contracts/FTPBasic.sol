@@ -79,6 +79,8 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 
     bool canAddAddresses = false;
 
+    bool PA_executed = false;
+
     event AddressAdded(address addx, uint operationId, uint coeficient);
     event CanNotAddAddress(address addx, string message, string dummy);
     event AddingAddressesActivated(address addx, string message, string dummy);
@@ -88,7 +90,8 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
     event ModuleTokenEmmited(address addx, uint opId, uint amount);
     event ProductiveActionError(address addx, uint opId, string message);
     event Debug(address addx, string func_from, string message);
-    
+
+
     function FTPBasic()
     {
 	ResetFTPModules();
@@ -192,32 +195,44 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 	AddingAddressesDeactivated(msg.sender, "From now FTP contract can not add new addresses", "");
     }
     
-    function ProductiveAction(address module_address, uint opId, address destination) public
+    function ProductiveAction(address module_address, uint opId, address destination) public returns (bool)
     {
-	Debug(msg.sender, "Productive Action", "1");
-//	if (msg.sender == module_address)
-//	{
-//	    Debug(msg.sender, "Productive Action", "2");
-//	    uint mIndex = FTPModules.opIdIndex[opId];
-//	    Debug(msg.sender, "Productive Action", "3");
-//	    address mModule = FTPModules.module[mIndex];
-//	    Debug(msg.sender, "Productive Action", "4");
-//	    if (mModule == module_address)
-//	    {
-//		Debug(msg.sender, "Productive Action", "5");
-//		uint256 mBalance = balances[module_address];
-//		Debug(msg.sender, "Productive Action", "6");
-//	        uint256 tAmount = mBalance.div(10000);
-//	        Debug(msg.sender, "Productive Action", "7");
-//		transferFrom(module_address, destination, tAmount);
-//		Debug(msg.sender, "Productive Action", "8");
-//	    }
-//	    else
-//	    {
-//		ProductiveActionError(module_address, opId, "Invalid address for current operation ID");
-//	    }
-//	    
-//	}
-//	else ProductiveActionError(module_address, opId, "Invalid sender address");
+	Debug(module_address, "DEBUG: ", "line 1");
+	PA_executed = true;
+	
+	if (msg.sender == module_address)
+	{
+	    Debug(msg.sender, "Productive Action", "line 2");
+	    uint mIndex = FTPModules.opIdIndex[opId];
+	    Debug(msg.sender, "Productive Action", "line 3");
+	    address mModule = FTPModules.module[mIndex];
+	    Debug(msg.sender, "Productive Action", "line 4");
+	    if (mModule == module_address)
+	    {
+		Debug(msg.sender, "Productive Action", "line 5");
+		uint256 mBalance = balances[module_address];
+		Debug(msg.sender, "Productive Action", "line 6");
+	        uint256 tAmount = mBalance.div(10000);
+	        Debug(msg.sender, "Productive Action", "line 7");
+		transfer(destination, tAmount);
+		Debug(msg.sender, "Productive Action", "line 8");
+		
+		return true;
+	    }
+/*	    else
+	    {
+		ProductiveActionError(module_address, opId, "Invalid address for current operation ID");
+		return false;
+	    }
+*/	    
+	}
+	else
+	{
+	    ProductiveActionError(module_address, opId, "Invalid sender address");
+	    return false;
+	}
+	return false;
+
     }
+
 }
