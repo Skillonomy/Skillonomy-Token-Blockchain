@@ -9,7 +9,8 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 {
 	using SafeMath for uint256;
 
-	function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){
+	function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string)
+	{
 		bytes memory _ba = bytes(_a);
 		bytes memory _bb = bytes(_b);
 		bytes memory _bc = bytes(_c);
@@ -32,7 +33,8 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 		return string(babcde);
 	}
 	
-	function bytes32ToString (bytes32 data) returns (string) {
+	function bytes32ToString (bytes32 data) returns (string)
+	{
 		bytes memory bytesString = new bytes(32);
 		for (uint j=0; j<32; j++) {
 			byte char = byte(bytes32(uint(data) * 2 ** (8 * j)));
@@ -44,29 +46,34 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 		return string(bytesString);
   	}
 	
-	function uintToBytes32(uint256 x) returns (bytes32 b) {
+	function uintToBytes32(uint256 x) returns (bytes32 b)
+	{
 		assembly { mstore(add(b, 32), x) }
 	}
 
-	function uintToString(uint number) returns (string)	{
+	function uintToString(uint number) returns (string)
+	{
 		bytes32 bx32 = uintToBytes32(number);
 		return bytes32ToString(bx32);
 	}
 
-
-	function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
+	function strConcat(string _a, string _b, string _c, string _d) internal returns (string)
+	{
 		return strConcat(_a, _b, _c, _d, "");
 	}
 
-	function strConcat(string _a, string _b, string _c) internal returns (string) {
+	function strConcat(string _a, string _b, string _c) internal returns (string)
+	{
 		return strConcat(_a, _b, _c, "", "");
 	}
 
-	function strConcat(string _a, string _b) internal returns (string) {
+	function strConcat(string _a, string _b) internal returns (string)
+	{
 		return strConcat(_a, _b, "", "", "");
 	}
 	
-	struct ModuleInfo {
+	struct ModuleInfo
+	{
 		uint size;
 		mapping (uint => uint) opId;
 		mapping (uint => uint) coef;
@@ -87,16 +94,19 @@ contract FTPBasic is StandardToken, Ownable, MintableToken
 	event ModuleTokenEmmited(address addx, uint opId, uint amount);
 	event ProductiveActionError(address addx, uint opId, string message);
 	
-	function FTPBasic()	{
+	function FTPBasic()
+	{
 		ResetFTPModules();
 		balances[msg.sender].add(10000000000000);
 	}
 
-	function ResetFTPModules() {
+	function ResetFTPModules()
+	{
 		FTPModules = ModuleInfo({size: 0});
 	}
 	
-	function emit() onlyOwner public {
+	function emit() onlyOwner public
+	{
 		uint256 coef_sum = 0;
 		uint256 emission_amount = 1000000000000;
 		for (uint i = 0; i < FTPModules.size; ++i)
